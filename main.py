@@ -10,7 +10,7 @@ from mail_BaseModel import*
 import random
 
 app = FastAPI()
-# def add_email(req:RequestDataEmail[Query(min_length=10,max_length=50)]):
+
 
 @app.get("/")
 def response_html():
@@ -19,12 +19,20 @@ def response_html():
 
 @app.post("/add_email")
 def add_email(req:RequestDataEmail):
-    with Session() as session:
-        create_email = EmailList()
-        create_email.name_email = req.name_email
+    print("add_email")
+    return ResponceDataEmail(success = True)
+    # with Session() as session:
+    #     check_email = session.query(EmailList).filter(EmailList.name_email == req.name_email).first()
+    #     if check_email:
+    #         return JSONResponse(
+    #         status_code=status.HTTP_400_BAD_REQUEST, 
+    #         content={"error": "Такой Email уже существует!"})
+        
+    #     create_email = EmailList()
+    #     create_email.name_email = req.name_email
 
-        session.add(create_email)
-        session.commit()
+    #     session.add(create_email)
+    #     session.commit()
 
-    return ResponceDataEmail(success = True,error="", data = create_data_picture_in_db(create_email))
+    #     return ResponceDataEmail(success = True,error="", data = create_data_email_in_db(create_email))
 

@@ -1,26 +1,25 @@
-from pydantic import BaseModel,EmailStr
+from fastapi import HTTPException
+from pydantic import BaseModel,EmailStr, field_validator, model_validator
 from typing import Optional
 from typing import List
 from pydantic import Field
+from pydantic_core import PydanticCustomError
 
-
-class DataEmail(BaseModel):
-    id_email: int
-    name_email: EmailStr
-    
-
-
-def create_data_picture_in_db(email_in_db):
-    data = DataEmail(
-                        id_email=email_in_db.id_email,
-                        name_email = email_in_db.name_email)
-    return data
 
 class RequestDataEmail(BaseModel):
-    name_email: EmailStr
+    email: EmailStr
+
+    @field_validator("email")
+    def min_len_email(cls, value):
+        print("field_validator name_email")
+        if len(value) < 6:
+            raise HTTPException(status_code=422, detail="email is to short")
+        if len(value.split('.')[-1])<2:
+            raise HTTPException(status_code=422, detail="domen is to short")
+        return value
 
 class ResponceDataEmail(BaseModel):
     success: bool
-    error: str | None
-    data: DataEmail
+    error: str | None = None
+    
 
