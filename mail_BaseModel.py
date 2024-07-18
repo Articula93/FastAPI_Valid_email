@@ -23,3 +23,7 @@ class ResponceDataEmail(BaseModel):
     error: str | None = None
     
 
+class ResponseValidEmail(BaseModel):
+    success: bool
+    error: str | None = None
+    

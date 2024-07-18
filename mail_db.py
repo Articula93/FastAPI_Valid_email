@@ -19,7 +19,11 @@ Session = sessionmaker(bind=engine)
 class EmailList(Base):
     __tablename__ = "email_list"
     id_email = Column(Integer)
-    name_email = Column(String(70))
+    email = Column(String(70))
+    check_valid = Column(String(50))
+    email_sent = Column(Boolean)
+    is_valid = Column(Boolean)
+    datetime = Column(DateTime)
     __table_args__ = (PrimaryKeyConstraint(id_email), {},)
 
 Base.metadata.create_all(engine)

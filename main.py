@@ -8,6 +8,9 @@ from fastapi.responses import JSONResponse, FileResponse
 from mail_db import*
 from mail_BaseModel import*
 import random
+import base64
+from datetime import datetime
+from send_email import*
 
 app = FastAPI()
 
@@ -19,20 +22,53 @@ def response_html():
 
 @app.post("/add_email")
 def add_email(req:RequestDataEmail):
-    print("add_email")
-    return ResponceDataEmail(success = True)
-    # with Session() as session:
-    #     check_email = session.query(EmailList).filter(EmailList.name_email == req.name_email).first()
-    #     if check_email:
-    #         return JSONResponse(
-    #         status_code=status.HTTP_400_BAD_REQUEST, 
-    #         content={"error": "Такой Email уже существует!"})
+    with Session() as session:
+        check_email = session.query(EmailList).filter(EmailList.email == req.email).first()
+        if check_email:
+            return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            content={"error": "Такой Email уже существует!"})
         
-    #     create_email = EmailList()
-    #     create_email.name_email = req.name_email
+        generate_name_valid = base64.urlsafe_b64encode(random.randbytes(30))
 
-    #     session.add(create_email)
-    #     session.commit()
+        if session.query(EmailList).filter(EmailList.check_valid == generate_name_valid).first():
+            return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            content={"error": "Такая последовательность уже существует!"})
+        
+        current_datetime = datetime.now()
 
-    #     return ResponceDataEmail(success = True,error="", data = create_data_email_in_db(create_email))
+        create_email = EmailList()
+        create_email.email = req.email
+        create_email.check_valid = generate_name_valid
+        create_email.is_valid = 0
+        create_email.datetime = current_datetime
 
+        session.add(create_email)
+        session.commit()
+
+        res = send_email(to_email = create_email.email,message = create_email.check_valid)
+
+        if res == True:
+            create_email.email_sent = 1
+        else:
+            create_email.email_sent = 0
+
+        session.commit()
+
+        return ResponceDataEmail(success = True,error="")
+
+@app.get("/valid_email")
+def valid_email(valid:str):
+    with Session() as session:
+        succession_from_email = session.query(EmailList).filter(EmailList.check_valid == valid).first()
+        if succession_from_email:
+            succession_from_email.is_valid = 1
+        else:
+            return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            content={"error": "Нет такой последовательности!"})
+        
+        session.commit()
+
+        return ResponseValidEmail(success = True,error="")
