@@ -5,8 +5,8 @@ PASSWORD = os.environ.get('yandex_pass')
 USERNAME = os.environ.get('yandex_email')
 
 def send_email(to_email,message):
-    email = "articula93@yandex.ru"
-    password = "wjphghaxrpyfppkk"
+    email = USERNAME
+    password = PASSWORD
     # to_email = "testapiivan@yandex.ru"
 
     server = smtplib.SMTP_SSL('smtp.yandex.ru',465)
