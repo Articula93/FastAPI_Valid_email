@@ -11,6 +11,7 @@ import random
 import base64
 from datetime import datetime
 from send_email import*
+import uvicorn
 
 app = FastAPI()
 
@@ -72,3 +73,7 @@ def valid_email(valid:str):
         session.commit()
 
         return ResponseValidEmail(success = True,error="")
+    
+
+if __name__ == "__main__":
+    uvicorn.run("main:app",host='195.133.144.169', reload=True)
