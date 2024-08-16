@@ -76,4 +76,4 @@ def valid_email(valid:str):
     
 
 if __name__ == "__main__":
-    uvicorn.run("main:app",host='195.133.144.169',port=80, reload=True)
+    uvicorn.run("main:app",host='195.133.144.169',port=8000, reload=True)
